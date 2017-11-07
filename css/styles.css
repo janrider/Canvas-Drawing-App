@@ -15,6 +15,10 @@ nav {
     right: 10px;
     text-align: right;
     height: 0;
+    display: none;
+}
+body:hover nav {
+    display: block;
 }
 nav.active {
     opacity: .5;
