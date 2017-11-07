@@ -1,0 +1,42 @@
+html, body {
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font: normal 400 11px/18px Arial, serif;
+}
+
+nav {
+    position: absolute;
+    z-index: 3;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    text-align: right;
+    height: 0;
+}
+nav.active {
+    opacity: .5;
+}
+nav .toggle {
+    display: none;
+}
+nav.active > *:not(.visible) {
+    display: none;
+}
+nav.active > .toggle {
+    display: inline;
+}
+nav:hover {
+    opacity: 1;
+}
+nav > *, nav label * {
+    vertical-align: top;
+}
+label {
+    margin-right: 10px;
+}
+#clearBtn {
+    float: left;
+}
