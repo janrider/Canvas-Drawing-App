@@ -15,13 +15,17 @@ nav {
     right: 10px;
     text-align: right;
     height: 0;
-    display: none;
+    opacity: 0;
+    transition: opacity 0.3s;
 }
 body:hover nav {
-    display: block;
+    opacity: 1;
 }
 nav.active {
-    opacity: .5;
+    opacity: .5 !important;
+}
+nav.active:hover {
+    opacity: 1 !important;
 }
 nav .toggle {
     display: none;
@@ -31,9 +35,6 @@ nav.active > *:not(.visible) {
 }
 nav.active > .toggle {
     display: inline;
-}
-nav:hover {
-    opacity: 1;
 }
 nav > *, nav label * {
     vertical-align: top;
