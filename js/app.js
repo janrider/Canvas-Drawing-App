@@ -1,117 +1,118 @@
-var canvas = document.querySelector("#canvas");
-var nav = document.querySelector("nav");
-
+var layers = [];
+var num = 0;
+var canvasId = "#canvas";
 var wW = window.innerWidth;
 var wH = window.innerHeight;
+var nav = document.querySelector("nav");
+var intervalDraw;
 
 const SPEED = 1;
+const options = {
+  opacity: 0.65,
+  length: 200,
+  color: '0',
+  source: '1',
+  type: '3',
+  isDraw: true,
+  mousePress: false,
+  endLine: null
+};
+options.sizeKoof = options.type === '3' ? 5 : 2;
 
-canvas.width = wW;
-canvas.height = wH;
-canvas.opacity = 0.65;
-canvas.length = 200;
-canvas.isDraw = true;
-canvas.source = '1';
-canvas.type = '3';
-canvas.mousePress = false;
-canvas.sizeKoof = canvas.type === '3' ? 5 : 2;
+const setColor = function(colorSelect) {
+  options.color = colorSelect.value;
+};
 
-if (canvas.getContext) {
-  var ctx = canvas.getContext("2d");
+const setOpacity = function (slider) {
+  options.opacity = slider.value;
+};
 
-  ctx.lineWidth = 1;
-  ctx.lineJoin = ctx.lineCap = 'round';
+const setLength = function (slider) {
+  options.length = slider.value;
+};
 
-  var opacity = function(opacity) {
-    return opacity + Math.round(Math.random()) * 0.4;
-  };
+const setSource = function(selectObject) {
+  clearInterval(intervalDraw);
 
-  var color = function() {
-    return Math.round(Math.random() * (120 - 10) + 10);
-  };
+  options.source = selectObject.value;
+  options.endLine = null;
 
-  var endLine = null;
+  if (options.source == '0') {
+    nav.classList.remove('mouse');
+    setDraw(false);
+  } else {
+    nav.classList.add('mouse');
+    setDraw(true);
+  }
+};
 
-  canvas.setOpacity = function (slider) {
-    canvas.opacity = slider.value;
-  };
+const setType = function(lineType) {
+  options.type = lineType.value;
+  options.endLine = null;
+  options.sizeKoof = (lineType.value === '3') ? 5 : 2;
+};
 
-  canvas.setLength = function (slider) {
-    canvas.length = slider.value;
-  };
+const setDraw = function(val) {
+  options.isDraw = val;
+  if (val) {
+    nav.classList.add('active')
 
-  canvas.setSource = function(selectObject) {
-    clearInterval(canvas.interval);
-
-    canvas.source = selectObject.value;
-    endLine = null;
-
-    if (canvas.source == '0') {
-      nav.classList.remove('mouse');
-      canvas.setDraw(false);
-    } else {
-      nav.classList.add('mouse');
-      canvas.setDraw(true);
+    if (options.source === '0') {
+      intervalDraw = setInterval(function() {
+        // drawCanvas(canvas)
+        drawCanvas(document.getElementById(layers[layers.length - 1]))
+      }, Math.floor(Math.random() * (SPEED - (SPEED / 2) + (SPEED / 2)) * 100) / 100)
     }
-  };
-
-  canvas.setDraw = function(val) {
-    canvas.isDraw = val;
-    if (val) {
-      nav.classList.add('active')
-
-      if (canvas.source === '0') {
-        canvas.interval = setInterval(function() {
-          drawCanvas()
-        }, Math.floor(Math.random() * (SPEED - (SPEED / 2) + (SPEED / 2)) * 100) / 100)
-      }
-    } else {
-      nav.classList.remove('active')
-      if (canvas.interval) {
-        clearInterval(canvas.interval);
-      }
+  } else {
+    nav.classList.remove('active')
+    if (intervalDraw) {
+      clearInterval(intervalDraw);
     }
   }
+};
 
-  canvas.setType = function(lineType) {
-    canvas.type = lineType.value
-    endLine = null;
-    canvas.sizeKoof = (lineType.value === '3') ? 5 : 2;
+var createCanvas = function() {
+  var wrapper = document.querySelector("#wrapper");
+  var node = document.createElement("canvas");
+
+  canvasId = "canvas" + num;
+  node.setAttribute("id", canvasId);
+  wrapper.appendChild(node);
+
+  var canvas = document.getElementById(canvasId);
+  layers.push(canvasId);
+
+  canvasInit(canvas)
+
+  num++;
+};
+
+var deleteCanvas = function() {
+  var node = document.getElementById(layers[layers.length - 2]);
+  node.remove();
+
+  layers.splice(layers.length - 2, 1);
+
+  if(layers.length === 0) {
+    createCanvas();
+  }
+};
+
+function clearAll() {
+  var node = document.getElementById('wrapper');
+  while (node.firstChild) {
+    node.removeChild(node.firstChild);
   }
 
-  canvas.clearAll = function() {
-    endLine = null;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-  }
+  createCanvas();
+}
 
-  canvas.moveOnCanvas = function(e) {
-    if (canvas.isDraw && (canvas.source === '2' || (canvas.source === '1' && canvas.mousePress))) {
-      clearInterval(canvas.interval);
-      drawCanvas(e.pageX, e.pageY)
-    }
-  };
 
-  canvas.mouseDown = function(e) {
-    canvas.mousePress = true;
-    if (canvas.isDraw && canvas.source === '1') {
-      canvas.interval = setInterval(function() {
-        drawCanvas(e.pageX, e.pageY)
-      }, Math.floor(Math.random() * (SPEED - (SPEED / 2) + (SPEED / 2)) * 100) / 5)
-    }
-  };
-  canvas.mouseUp = function() {
-    canvas.mousePress = false;
-    if (canvas.source === '2' || (canvas.source === '1')) {
-      endLine = null;
-      clearInterval(canvas.interval);
-    }
-  };
+function init() {
+  wW = window.innerWidth;
+  wH = window.innerHeight;
 
-  canvas.addEventListener('mousedown', canvas.mouseDown);
-  canvas.addEventListener('mousemove', canvas.moveOnCanvas);
-  canvas.addEventListener('touchstart', canvas.mouseDown);
-  canvas.addEventListener('touchmove', canvas.moveOnCanvas);
+  nav = document.querySelector("nav");
 
-  window.addEventListener('mouseup', canvas.mouseUp);
-  window.addEventListener('touchend', canvas.mouseUp);
+  createCanvas();
 }

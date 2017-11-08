@@ -4,16 +4,28 @@
     <meta charset="UTF-8">
     <title>Lines</title>
     <link href="css/styles.css" rel="stylesheet" />
+
+    <script src="js/app.js"></script>
+    <script src="js/canvas.js"></script>
 </head>
-<body>
-    <canvas id="canvas" width="100" height="200"></canvas>
-
+<body onload="init()">
     <nav class="mouse">
-        <button type="button" id="clearBtn" onclick="canvas.clearAll()">Clear canvas</button>
-
+        <div id="clearBtn">
+            <button type="button" onclick="clearAll()">Clear all</button>
+            <button type="button" onclick="deleteCanvas()">Undo</button>
+        </div>
 
         <label>
-            <select onchange="canvas.setType(this)">
+            <select onchange="setColor(this)">
+                <option value="0" selected>All colors</option>
+                <option value="1">Red</option>
+                <option value="2">Green</option>
+                <option value="3">Blue</option>
+            </select>
+        </label>
+
+        <label>
+            <select onchange="setType(this)">
                 <option value="3" selected>Circles</option>
                 <option value="1">Lines</option>
                 <option value="2">Curves</option>
@@ -21,23 +33,23 @@
         </label>
 
         <label>
-            Size: <input onchange="canvas.setLength(this)" type="range" min="30" max="400" step="10" value ="220" />
+            Size: <input onchange="setLength(this)" type="range" min="30" max="400" step="10" value ="220" />
         </label>
 
         <label>
-            Opacity: <input onchange="canvas.setOpacity(this)" type="range" min="0.1" max="0.8" step="0.01" value ="0.65" />
+            Opacity: <input onchange="setOpacity(this)" type="range" min="0.05" max="0.9" step="0.01" value ="0.6" />
         </label>
 
-        <select onchange="canvas.setSource(this)">
-            <option value="1" selected>MouseDown</option>
+        <select onchange="setSource(this)">
+            <option value="1" selected>Brush</option>
             <!--<option value="2">FollowCursor</option>-->
             <option value="0">Random</option>
         </select>
 
-        <button type="button" class="start" onclick="canvas.setDraw(true)">Start</button>
-        <button type="button" class="stop" onclick="canvas.setDraw(false)">Stop</button>
+        <button type="button" class="start" onclick="setDraw(true)">Start</button>
+        <button type="button" class="stop" onclick="setDraw(false)">Stop</button>
     </nav>
+
+    <div id="wrapper"></div>
 </body>
-<script src="js/app.js"></script>
-<script src="js/draw.js"></script>
 </html>
