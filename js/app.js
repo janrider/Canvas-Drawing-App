@@ -11,7 +11,7 @@ canvas.height = wH;
 canvas.opacity = 0.65;
 canvas.length = 200;
 canvas.isDraw = false;
-canvas.source = '2';
+canvas.source = '1';
 canvas.mousePress = false;
 
 if (canvas.getContext) {
