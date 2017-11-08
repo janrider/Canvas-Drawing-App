@@ -4,7 +4,7 @@ var drawCanvas = function(canvas, mX, mY) {
   ctx.beginPath();
 
   var opacity = function(opacity) {
-    return opacity + Math.round(Math.random()) * 0.4;
+    return opacity + Math.round(Math.random() * 0.4);
   };
 
   var color = function(color) {
