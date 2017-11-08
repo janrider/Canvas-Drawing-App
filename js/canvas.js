@@ -83,7 +83,7 @@ function canvasInit(canvas) {
         if (intervalDraw) {
           clearInterval(intervalDraw);
         }
-        drawCanvas(canvas, e.pageX, e.pageY)
+        drawCanvas(canvas, e.touches ? e.touches[0].pageX : e.pageX, e.touches ? e.touches[0].pageY : e.pageY)
       }
     };
 
@@ -91,7 +91,7 @@ function canvasInit(canvas) {
       canvas.mousePress = true;
       if (options.isDraw && options.source === '1') {
         intervalDraw = setInterval(function() {
-          drawCanvas(canvas, e.pageX, e.pageY)
+          drawCanvas(canvas, e.touches ? e.touches[0].pageX : e.pageX, e.touches ? e.touches[0].pageY : e.pageY)
         }, Math.floor(Math.random() * (SPEED - (SPEED / 2) + (SPEED / 2)) * 100) / 5)
       }
     };

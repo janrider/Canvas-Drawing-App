@@ -107,7 +107,6 @@ function clearAll() {
   createCanvas();
 }
 
-
 function init() {
   wW = window.innerWidth;
   wH = window.innerHeight;
@@ -116,3 +115,9 @@ function init() {
 
   createCanvas();
 }
+
+window.addEventListener('keydown', function(e) {
+  var evtobj = window.event ? event : e
+
+  if (evtobj.keyCode == 90 && evtobj.ctrlKey) deleteCanvas();
+});
