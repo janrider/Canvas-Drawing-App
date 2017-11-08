@@ -10,7 +10,7 @@ canvas.width = wW;
 canvas.height = wH;
 canvas.opacity = 0.65;
 canvas.length = 200;
-canvas.isDraw = false;
+canvas.isDraw = true;
 canvas.source = '1';
 canvas.type = '3';
 canvas.mousePress = false;
@@ -46,7 +46,13 @@ if (canvas.getContext) {
     canvas.source = selectObject.value;
     endLine = null;
 
-    canvas.setDraw(true);
+    if (canvas.source == '0') {
+      nav.classList.remove('mouse');
+      canvas.setDraw(false);
+    } else {
+      nav.classList.add('mouse');
+      canvas.setDraw(true);
+    }
   };
 
   canvas.setDraw = function(val) {

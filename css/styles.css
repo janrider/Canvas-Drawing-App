@@ -30,6 +30,10 @@ nav button {
     border-radius: 3px;
     padding: 1px 7px 2px;
 }
+nav.mouse .start,
+nav.mouse .stop {
+    display: none !important
+}
 nav .start {
     background: lightgreen;
 }

@@ -8,7 +8,7 @@
 <body>
     <canvas id="canvas" width="100" height="200"></canvas>
 
-    <nav>
+    <nav class="mouse">
         <button type="button" id="clearBtn" onclick="canvas.clearAll()">Clear canvas</button>
 
 
@@ -30,7 +30,7 @@
 
         <select onchange="canvas.setSource(this)">
             <option value="1" selected>MouseDown</option>
-            <option value="2">FollowCursor</option>
+            <!--<option value="2">FollowCursor</option>-->
             <option value="0">Random</option>
         </select>
 
