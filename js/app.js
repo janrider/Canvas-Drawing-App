@@ -54,6 +54,9 @@ const setType = function(lineType) {
 
 const setDraw = function(val) {
   options.isDraw = val;
+
+  document.getElementById("undoBtn").disabled = val;
+
   if (val) {
     nav.classList.add('active')
 
@@ -68,6 +71,7 @@ const setDraw = function(val) {
     if (intervalDraw) {
       clearInterval(intervalDraw);
     }
+    createCanvas();
   }
 };
 
@@ -87,11 +91,11 @@ var createCanvas = function() {
   num++;
 };
 
-var deleteCanvas = function() {
-  var node = document.getElementById(layers[layers.length - 2]);
+var deleteCanvas = function(n) {
+  var node = document.getElementById(layers[layers.length - 2 + (n ? n : 0)]);
   node.remove();
 
-  layers.splice(layers.length - 2, 1);
+  layers.splice(layers.length - 2 + (n ? n : 0), 1);
 
   if(layers.length === 0) {
     createCanvas();
@@ -121,3 +125,21 @@ window.addEventListener('keydown', function(e) {
 
   if (evtobj.keyCode == 90 && evtobj.ctrlKey) deleteCanvas();
 });
+
+function debounce(func) {
+  var timer;
+
+  return function(event) {
+    if (timer) clearTimeout(timer);
+
+    timer = setTimeout(func, 300, event);
+  };
+}
+
+window.addEventListener("resize", debounce(function() {
+  wW = window.innerWidth;
+  wH = window.innerHeight;
+
+  deleteCanvas(1);
+  createCanvas();
+}));
