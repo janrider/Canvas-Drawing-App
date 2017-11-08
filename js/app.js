@@ -12,57 +12,25 @@ canvas.opacity = 0.65;
 canvas.length = 200;
 canvas.isDraw = false;
 canvas.source = '1';
+canvas.type = '3';
 canvas.mousePress = false;
+canvas.sizeKoof = canvas.type === '3' ? 5 : 2;
 
 if (canvas.getContext) {
   var ctx = canvas.getContext("2d");
 
-  var koof = function() {
-    return Math.round(Math.random() * 1000) / 1000;
-  }
-  var C = function(opacity) {
+  ctx.lineWidth = 1;
+  ctx.lineJoin = ctx.lineCap = 'round';
+
+  var opacity = function(opacity) {
     return opacity + Math.round(Math.random()) * 0.4;
   };
+
   var color = function() {
     return Math.round(Math.random() * (120 - 10) + 10);
   };
 
-  canvas.drawLine = function(mX, mY) {
-    ctx.beginPath();
-
-    var float = function () {
-      return Math.floor((Math.random() * (15) + 5) * (Math.random() < 0.5 ? -1 : 1));
-    };
-
-    const point = {
-      x: (mX && mY) ? mX + float() : Math.floor(Math.random() * (wW) * 100) / 100,
-      y: (mX && mY) ? mY + float() : Math.floor(Math.random() * (wH) * 100) / 100,
-    };
-
-    const sign = function() {
-      return (Math.random() < 0.5 ? -1 : 1);
-    }
-
-    const signX = sign();
-    const signY = sign();
-
-    const lineSize = function() {
-      return Math.floor((Math.random() * canvas.length));
-    };
-
-    const line = {
-      sX: point.x + lineSize() * signX,
-      sY: point.y + lineSize() * signY,
-      eX: point.x + lineSize() * -signX,
-      eY: point.y + lineSize() * -signY,
-    };
-
-    ctx.moveTo(line.sX, line.sY);
-    ctx.lineTo(line.eX, line.eY);
-
-    ctx.strokeStyle = 'rgba(' + color() + ', ' + color() + ', ' + color() + ', ' + (C(canvas.opacity)) + ')';
-    ctx.stroke();
-  };
+  var endLine = null;
 
   canvas.setOpacity = function (slider) {
     canvas.opacity = slider.value;
@@ -72,19 +40,11 @@ if (canvas.getContext) {
     canvas.length = slider.value;
   };
 
-  canvas.moveOnCanvas = function(e) {
-    if (
-      canvas.isDraw &&
-      (canvas.source === '2' || (canvas.source === '1' && canvas.mousePress))
-    ) {
-      canvas.drawLine(e.pageX, e.pageY)
-    }
-  };
-
   canvas.setSource = function(selectObject) {
     clearInterval(canvas.interval);
 
     canvas.source = selectObject.value;
+    endLine = null;
 
     canvas.setDraw(true);
   };
@@ -96,7 +56,7 @@ if (canvas.getContext) {
 
       if (canvas.source === '0') {
         canvas.interval = setInterval(function() {
-          canvas.drawLine()
+          drawCanvas()
         }, Math.floor(Math.random() * (SPEED - (SPEED / 2) + (SPEED / 2)) * 100) / 100)
       }
     } else {
@@ -107,15 +67,38 @@ if (canvas.getContext) {
     }
   }
 
+  canvas.setType = function(lineType) {
+    canvas.type = lineType.value
+    endLine = null;
+    canvas.sizeKoof = (lineType.value === '3') ? 5 : 2;
+  }
+
   canvas.clearAll = function() {
+    endLine = null;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
   }
 
-  canvas.mouseDown = function() {
+  canvas.moveOnCanvas = function(e) {
+    if (canvas.isDraw && (canvas.source === '2' || (canvas.source === '1' && canvas.mousePress))) {
+      clearInterval(canvas.interval);
+      drawCanvas(e.pageX, e.pageY)
+    }
+  };
+
+  canvas.mouseDown = function(e) {
     canvas.mousePress = true;
+    if (canvas.isDraw && canvas.source === '1') {
+      canvas.interval = setInterval(function() {
+        drawCanvas(e.pageX, e.pageY)
+      }, Math.floor(Math.random() * (SPEED - (SPEED / 2) + (SPEED / 2)) * 100) / 5)
+    }
   };
   canvas.mouseUp = function() {
     canvas.mousePress = false;
+    if (canvas.source === '2' || (canvas.source === '1')) {
+      endLine = null;
+      clearInterval(canvas.interval);
+    }
   };
 
   canvas.addEventListener('mousedown', canvas.mouseDown);
