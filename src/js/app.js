@@ -94,11 +94,11 @@ var createCanvas = function(data) {
 
   var canvas = document.getElementById(canvasId);
   layers.push(canvasId);
+
   if (layers.length > 1) {
     document.getElementById("undoBtn").disabled = false;
   }
-
-
+  
   canvasInit(canvas, data)
 
   num++;
@@ -121,8 +121,8 @@ var deleteCanvas = function(n) {
 
 function clearAll() {
   var node = document.getElementById('wrapper');
-  while (node.firstChild) {
-    node.removeChild(node.firstChild);
+  while (node.lastChild) {
+    deleteCanvas()
   }
 
   createCanvas();
