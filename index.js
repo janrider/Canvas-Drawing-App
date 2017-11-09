@@ -23,17 +23,12 @@ function onConnection(socket){
       history[roomName] = [];
     }
     history[roomName].push(data);
+    if (history[roomName].length > 50) {
+      history[roomName].splice(0, history[roomName].length - 50);
+    }
 
     return socket.broadcast.to(roomName).emit('drawing', data);
   })
-
-  setInterval(() => {
-    roomsList.forEach(room => {
-      if (!io.sockets.adapter.rooms[room] || io.sockets.adapter.rooms[room].length === 0) {
-        delete history[room];
-      }
-    })
-  }, 5000);
 }
 
 io.on('connection', onConnection);

@@ -59,7 +59,9 @@ const setDraw = function(val) {
   options.isDraw = val;
   const canvas = document.getElementById(layers[layers.length - 1]);
 
-  document.getElementById("undoBtn").disabled = val;
+  if (document.getElementById("undoBtn")) {
+    document.getElementById("undoBtn").disabled = val;
+  }
 
   if (val) {
     nav.classList.add('active')
@@ -100,6 +102,28 @@ var createCanvas = function(data) {
   }
   
   canvasInit(canvas, data)
+
+  num++;
+};
+
+var createImage = function(data) {
+  var wrapper = document.querySelector("#wrapper");
+  var node = document.createElement("img");
+
+  node.src = data;
+
+  canvasId = "canvas" + num;
+  node.setAttribute("id", canvasId);
+  wrapper.appendChild(node);
+
+  var canvas = document.getElementById(canvasId);
+  layers.push(canvasId);
+
+  if (layers.length > 1 && document.getElementById("undoBtn")) {
+    document.getElementById("undoBtn").disabled = false;
+  }
+
+  // canvasInit(canvas, data)
 
   num++;
 };
@@ -182,7 +206,8 @@ function startSocket(hash) {
 
   if (history && history.length > 0) {
     history.forEach(item => {
-      createCanvas(item);
+      createImage(item);
+      // createCanvas(item);
     })
   }
 }

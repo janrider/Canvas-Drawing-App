@@ -82,50 +82,61 @@ function canvasInit(canvas, data) {
       }
     }
 
-    // Trigger mouse
-    canvas.moveOnCanvas = function(e) {
-      if (options.isDraw && (options.source === '2' || (options.source === '1' && canvas.mousePress))) {
-        if (intervalDraw) {
-          clearInterval(intervalDraw);
-        }
-        drawCanvas(canvas, e.touches ? e.touches[0].pageX : e.pageX, e.touches ? e.touches[0].pageY : e.pageY)
-      }
-    };
+    if (!data) {
+      canvas.classList.add('active');
 
-    canvas.mouseDown = function(e) {
-      canvas.mousePress = true;
-      if (options.isDraw && options.source === '1') {
-        intervalDraw = setInterval(function() {
+      canvas.moveOnCanvas = function(e) {
+        if (options.isDraw && (options.source === '2' || (options.source === '1' && canvas.mousePress))) {
+          if (intervalDraw) {
+            clearInterval(intervalDraw);
+          }
           drawCanvas(canvas, e.touches ? e.touches[0].pageX : e.pageX, e.touches ? e.touches[0].pageY : e.pageY)
-        }, Math.floor(Math.random() * (SPEED - (SPEED / 2) + (SPEED / 2)) * 100) / 5)
-      }
-    };
-    canvas.mouseUp = function() {
-      if (options.source === '2' || (options.source === '1')) {
-        options.endLine = null;
-        if (intervalDraw) {
-          clearInterval(intervalDraw);
         }
+      };
 
-        if (canvas.mousePress) {
-          if (hash) {
-            socket.emit('drawing', canvas.toDataURL());
+      canvas.mouseDown = function(e) {
+        canvas.mousePress = true;
+        if (options.isDraw && options.source === '1') {
+          intervalDraw = setInterval(function() {
+            drawCanvas(canvas, e.touches ? e.touches[0].pageX : e.pageX, e.touches ? e.touches[0].pageY : e.pageY)
+          }, Math.floor(Math.random() * (SPEED - (SPEED / 2) + (SPEED / 2)) * 100) / 5)
+        }
+      };
+      canvas.mouseUp = function() {
+        canvas.classList.remove('active');
+
+        if (options.source === '2' || (options.source === '1')) {
+          options.endLine = null;
+          if (intervalDraw) {
+            clearInterval(intervalDraw);
           }
 
-          createCanvas();
+          if (canvas.mousePress) {
+            if (hash) {
+              socket.emit('drawing', canvas.toDataURL());
+            }
+
+            canvas.removeEventListener('mousedown', this, false);
+            canvas.removeEventListener('touchstart', this, false);
+            canvas.removeEventListener('mousemove', this, false);
+            canvas.removeEventListener('touchmove', this, false);
+            canvas.removeEventListener('mouseup', this, false);
+            canvas.removeEventListener('touchend', this, false);
+
+            createCanvas();
+          }
         }
-      }
 
-      canvas.mousePress = false;
-      ctx.restore();
-    };
+        canvas.mousePress = false;
+        ctx.restore();
+      };
 
-    canvas.addEventListener('mousedown', canvas.mouseDown);
-    canvas.addEventListener('mousemove', canvas.moveOnCanvas);
-    canvas.addEventListener('touchstart', canvas.mouseDown);
-    canvas.addEventListener('touchmove', canvas.moveOnCanvas);
-
-    window.addEventListener('mouseup', canvas.mouseUp);
-    window.addEventListener('touchend', canvas.mouseUp);
+      canvas.addEventListener('mousedown', canvas.mouseDown);
+      canvas.addEventListener('touchstart', canvas.mouseDown);
+      canvas.addEventListener('mousemove', canvas.moveOnCanvas);
+      canvas.addEventListener('touchmove', canvas.moveOnCanvas);
+      canvas.addEventListener('mouseup', canvas.mouseUp);
+      canvas.addEventListener('touchend', canvas.mouseUp);
+    }
   }
 }

@@ -16,10 +16,20 @@ body {
     user-select: none;
 }
 
+#wrapper img {
+    position: absolute;
+    left: 0;
+    top: 0;
+    pointer-events: none;
+}
 canvas {
     position: absolute;
     left: 0;
     top: 0;
+    pointer-events: none;
+}
+canvas.active {
+    pointer-events: auto;
 }
 
 nav {
