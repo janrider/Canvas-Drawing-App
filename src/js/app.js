@@ -6,6 +6,7 @@ var wH = window.innerHeight;
 var nav = document.querySelector("nav");
 var intervalDraw;
 var socket;
+var hash = window.location.hash.substr(1);
 
 const SPEED = 1;
 const options = {
@@ -90,6 +91,10 @@ var createCanvas = function(data) {
 
   var canvas = document.getElementById(canvasId);
   layers.push(canvasId);
+  if (layers.length > 1) {
+    document.getElementById("undoBtn").disabled = false;
+  }
+
 
   canvasInit(canvas, data)
 
@@ -101,6 +106,10 @@ var deleteCanvas = function(n) {
   node.remove();
 
   layers.splice(layers.length - 2 + (n ? n : 0), 1);
+
+  if (layers.length < 2) {
+    document.getElementById("undoBtn").disabled = true;
+  }
 
   if(layers.length === 0) {
     createCanvas();
@@ -140,15 +149,21 @@ window.addEventListener("resize", debounce(function() {
   createCanvas();
 }));
 
-var onDrawingEvent = function(data) {
-  createCanvas(data);
+var onDrawingEvent = function(req) {
+  console.log(req.history);
+  createCanvas(req.data);
 };
 
 function init() {
   wW = window.innerWidth;
   wH = window.innerHeight;
 
-  socket = io();
+  socket = io.connect();
+  var room = 'room-' + hash;
+
+  socket.on('connect', function() {
+    socket.emit('room', room);
+  });
 
   socket.on('drawing', onDrawingEvent);
 
