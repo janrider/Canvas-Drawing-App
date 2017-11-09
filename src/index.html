@@ -11,44 +11,50 @@
 </head>
 <body onload="init()">
     <nav class="mouse">
-        <div id="clearBtn">
+        <div class="fleft">
             <button type="button" onclick="clearAll()">Clear all</button>
             <button type="button" id="undoBtn" disabled="disabled" onclick="deleteCanvas()">Undo</button>
         </div>
 
-        <label>
-            <select onchange="setColor(this)">
-                <option value="0" selected>All colors</option>
-                <option value="1">Red</option>
-                <option value="2">Green</option>
-                <option value="3">Blue</option>
+        <div>
+            <button type="button" onclick="sharePano()">Share with friends</button>
+        </div>
+
+        <div class="options">
+            <label>
+                <select onchange="setColor(this)">
+                    <option value="0" selected>All colors</option>
+                    <option value="1">Red</option>
+                    <option value="2">Green</option>
+                    <option value="3">Blue</option>
+                </select>
+            </label>
+
+            <label>
+                <select onchange="setType(this)">
+                    <option value="3" selected>Circles</option>
+                    <option value="1">Lines</option>
+                    <option value="2">Curves</option>
+                </select>
+            </label>
+
+            <label>
+                Size: <input onchange="setLength(this)" type="range" min="30" max="400" step="10" value ="220" />
+            </label>
+
+            <label>
+                Opacity: <input onchange="setOpacity(this)" type="range" min="0.05" max="0.9" step="0.01" value ="0.6" />
+            </label>
+
+            <select onchange="setSource(this)">
+                <option value="1" selected>Brush</option>
+                <!--<option value="2">FollowCursor</option>-->
+                <option value="0">Random</option>
             </select>
-        </label>
 
-        <label>
-            <select onchange="setType(this)">
-                <option value="3" selected>Circles</option>
-                <option value="1">Lines</option>
-                <option value="2">Curves</option>
-            </select>
-        </label>
-
-        <label>
-            Size: <input onchange="setLength(this)" type="range" min="30" max="400" step="10" value ="220" />
-        </label>
-
-        <label>
-            Opacity: <input onchange="setOpacity(this)" type="range" min="0.05" max="0.9" step="0.01" value ="0.6" />
-        </label>
-
-        <select onchange="setSource(this)">
-            <option value="1" selected>Brush</option>
-            <!--<option value="2">FollowCursor</option>-->
-            <option value="0">Random</option>
-        </select>
-
-        <button type="button" class="start" onclick="setDraw(true)">Start</button>
-        <button type="button" class="stop" onclick="setDraw(false)">Stop</button>
+            <button type="button" class="start" onclick="setDraw(true)">Start</button>
+            <button type="button" class="stop" onclick="setDraw(false)">Stop</button>
+        </div>
     </nav>
 
     <div id="wrapper"></div>

@@ -7,6 +7,7 @@ var nav = document.querySelector("nav");
 var intervalDraw;
 var socket;
 var hash = window.location.hash.substr(1);
+var isSharing = false;
 
 const SPEED = 1;
 const options = {
@@ -20,6 +21,7 @@ const options = {
   endLine: null
 };
 options.sizeKoof = options.type === '3' ? 5 : 2;
+
 
 const setColor = function(colorSelect) {
   options.color = colorSelect.value;
@@ -75,7 +77,9 @@ const setDraw = function(val) {
       clearInterval(intervalDraw);
     }
 
-    socket.emit('drawing', canvas.toDataURL());
+    if (hash && isSharing) {
+      socket.emit('drawing', canvas.toDataURL());
+    }
 
     createCanvas();
   }
@@ -128,7 +132,12 @@ function clearAll() {
 window.addEventListener('keydown', function(e) {
   var evtobj = window.event ? event : e
 
-  if (evtobj.keyCode == 90 && evtobj.ctrlKey) deleteCanvas();
+  if (evtobj.keyCode == 90 && evtobj.ctrlKey) {
+
+    if (layers.length > 1) {
+      deleteCanvas();
+    }
+  }
 });
 
 function debounce(func) {
@@ -149,23 +158,43 @@ window.addEventListener("resize", debounce(function() {
   createCanvas();
 }));
 
-var onDrawingEvent = function(req) {
-  console.log(req.history);
-  createCanvas(req.data);
+var onDrawingEvent = function(data) {
+  createCanvas(data);
 };
+
+function httpGet(theUrl) {
+  var xmlHttp = new XMLHttpRequest();
+  xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
+  xmlHttp.send( null );
+  return xmlHttp.responseText;
+}
+
+function sharePano() {
+  window.location.hash = 1;
+}
 
 function init() {
   wW = window.innerWidth;
   wH = window.innerHeight;
 
-  socket = io.connect();
-  var room = 'room-' + hash;
+  if (hash) {
+    socket = io.connect();
+    var room = 'room-' + hash;
 
-  socket.on('connect', function() {
-    socket.emit('room', room);
-  });
+    socket.on('connect', function() {
+      socket.emit('room', room);
+    });
 
-  socket.on('drawing', onDrawingEvent);
+    socket.on('drawing', onDrawingEvent);
+
+    const history = JSON.parse(httpGet('/history?room=' + room)).data;
+
+    if (history && history.length > 0) {
+      history.forEach(item => {
+        createCanvas(item);
+      })
+    }
+  }
 
   nav = document.querySelector("nav");
 
