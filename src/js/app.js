@@ -7,7 +7,6 @@ var nav = document.querySelector("nav");
 var intervalDraw;
 var socket;
 var hash = window.location.hash.substr(1);
-var isSharing = false;
 
 const SPEED = 1;
 const options = {
@@ -77,7 +76,7 @@ const setDraw = function(val) {
       clearInterval(intervalDraw);
     }
 
-    if (hash && isSharing) {
+    if (hash) {
       socket.emit('drawing', canvas.toDataURL());
     }
 
@@ -169,8 +168,40 @@ function httpGet(theUrl) {
   return xmlHttp.responseText;
 }
 
-function sharePano() {
-  window.location.hash = 1;
+function startSocket(hash) {
+  socket = io.connect();
+  var room = 'room-' + hash;
+
+  socket.on('connect', function() {
+    socket.emit('room', room);
+  });
+
+  socket.on('drawing', onDrawingEvent);
+
+  const history = JSON.parse(httpGet('/history?room=' + room)).data;
+
+  if (history && history.length > 0) {
+    history.forEach(item => {
+      createCanvas(item);
+    })
+  } else {
+    alert('Share link to this page with you friend(s) and draw together')
+  }
+}
+
+function sharePano(link) {
+  function guid() {
+    function s4() {
+      return Math.floor((1 + Math.random()) * 0x10000)
+        .toString(16)
+        .substring(1);
+    }
+    return s4() + s4();
+  }
+
+  const hash = guid();
+
+  link.href = window.location + '#' + hash
 }
 
 function init() {
@@ -178,22 +209,7 @@ function init() {
   wH = window.innerHeight;
 
   if (hash) {
-    socket = io.connect();
-    var room = 'room-' + hash;
-
-    socket.on('connect', function() {
-      socket.emit('room', room);
-    });
-
-    socket.on('drawing', onDrawingEvent);
-
-    const history = JSON.parse(httpGet('/history?room=' + room)).data;
-
-    if (history && history.length > 0) {
-      history.forEach(item => {
-        createCanvas(item);
-      })
-    }
+    startSocket(hash);
   }
 
   nav = document.querySelector("nav");

@@ -28,7 +28,7 @@ nav {
     top: 0px;
     left: 0px;
     right: 0px;
-    padding: 6px 10px 5px;
+    padding: 5px 10px;
     text-align: right;
     background: rgba(240, 240, 240, .9);
     transition: opacity 0.3s;
@@ -42,6 +42,15 @@ nav button {
     border-radius: 3px;
     padding: 1px 7px 2px;
     cursor: pointer;
+}
+nav a {
+    background: white;
+    border: #ccc 1px solid;
+    border-radius: 3px;
+    padding: 1px 7px 2px;
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
 }
 nav.mouse .start,
 nav.mouse .stop {

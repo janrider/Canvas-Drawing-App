@@ -108,7 +108,7 @@ function canvasInit(canvas, data) {
         }
 
         if (canvas.mousePress) {
-          if (hash && isSharing) {
+          if (hash) {
             socket.emit('drawing', canvas.toDataURL());
           }
 
