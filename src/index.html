@@ -12,12 +12,12 @@
 <body onload="init()">
     <nav class="mouse">
         <div class="fleft">
-            <button type="button" onclick="clearAll()">Clear all</button>
+            <button type="button" id="clearBtn" onclick="clearAll()">Clear all</button>
             <button type="button" id="undoBtn" disabled="disabled" onclick="deleteCanvas()">Undo</button>
         </div>
 
         <div>
-            <a href="/" target="_blank" type="button" onclick="sharePano(this)">Draw together 👬</a>
+            <a href="/" target="_blank" id="shareBtn" type="button" onclick="sharePano(this)">Draw together 👬</a>
         </div>
 
         <div class="options">
@@ -39,7 +39,7 @@
             </label>
 
             <label>
-                Size: <input onchange="setLength(this)" type="range" min="30" max="400" step="10" value ="220" />
+                Size: <input onchange="setLength(this)" type="range" min="30" max="400" step="10" value ="120" />
             </label>
 
             <label>

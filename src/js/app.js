@@ -10,8 +10,8 @@ var hash = window.location.hash.substr(1);
 
 const SPEED = 1;
 const options = {
-  opacity: 0.65,
-  length: 200,
+  opacity: 0.6,
+  length: 120,
   color: '0',
   source: '1',
   type: '3',
@@ -95,7 +95,7 @@ var createCanvas = function(data) {
   var canvas = document.getElementById(canvasId);
   layers.push(canvasId);
 
-  if (layers.length > 1) {
+  if (layers.length > 1 && document.getElementById("undoBtn")) {
     document.getElementById("undoBtn").disabled = false;
   }
   
@@ -110,7 +110,7 @@ var deleteCanvas = function(n) {
 
   layers.splice(layers.length - 2 + (n ? n : 0), 1);
 
-  if (layers.length < 2) {
+  if (layers.length < 2 && document.getElementById("undoBtn")) {
     document.getElementById("undoBtn").disabled = true;
   }
 
@@ -184,8 +184,6 @@ function startSocket(hash) {
     history.forEach(item => {
       createCanvas(item);
     })
-  } else {
-    alert('Share link to this page with you friend(s) and draw together')
   }
 }
 
@@ -209,6 +207,9 @@ function init() {
   wH = window.innerHeight;
 
   if (hash) {
+    document.getElementById('clearBtn').remove();
+    document.getElementById('undoBtn').remove();
+    document.getElementById('shareBtn').remove();
     startSocket(hash);
   }
 
