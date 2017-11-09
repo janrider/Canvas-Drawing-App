@@ -1,36 +1,32 @@
-var drawCanvas = function(canvas, mX, mY) {
+const opacity = function(opacity) {
+  return opacity + Math.round(Math.random() * 0.4);
+};
+
+const color = function(color) {
+  return (color === options.color) ? 220 : Math.round(Math.random() * ((options.color > 0 ? 100 : 150) - 10) + 10);
+};
+
+const float = function () {
+  return Math.floor((Math.random() * 10) * (Math.random() < 0.5 ? -1 : 1));
+};
+
+const sign = function() {
+  return (Math.random() < 0.5 ? -1 : 1);
+};
+
+const lineSize = function() {
+  return Math.floor((Math.random() * options.length / options.sizeKoof));
+};
+
+
+const drawCanvas = function(canvas, mX, mY) {
   const ctx = canvas.getContext("2d");
-
-  ctx.beginPath();
-
-  var opacity = function(opacity) {
-    return opacity + Math.round(Math.random() * 0.4);
-  };
-
-  var color = function(color) {
-    return (color === options.color) ? 220 : Math.round(Math.random() * ((options.color > 0 ? 100 : 150) - 10) + 10);
-  };
-
-  var float = function () {
-    return Math.floor((Math.random() * 10) * (Math.random() < 0.5 ? -1 : 1));
-  };
-
   const point = {
     x: (mX && mY) ? mX + float() : Math.floor(Math.random() * (wW) * 100) / 100,
     y: (mX && mY) ? mY + float() : Math.floor(Math.random() * (wH) * 100) / 100,
   };
-
-  const sign = function() {
-    return (Math.random() < 0.5 ? -1 : 1);
-  }
-
   const signX = sign();
   const signY = sign();
-
-  const lineSize = function() {
-    return Math.floor((Math.random() * options.length / options.sizeKoof));
-  };
-
   const line = {
     sX: point.x + lineSize() * signX,
     sY: point.y + lineSize() * signY,
@@ -38,6 +34,7 @@ var drawCanvas = function(canvas, mX, mY) {
     eY: point.y + lineSize() * -signY,
   };
 
+  ctx.beginPath();
   ctx.moveTo(options.endLine ? options.endLine.x : line.sX, options.endLine ? options.endLine.y : line.sY);
 
   if (options.type === '1') {
@@ -67,7 +64,7 @@ var drawCanvas = function(canvas, mX, mY) {
   }
 };
 
-function canvasInit(canvas) {
+function canvasInit(canvas, data) {
   canvas.width = wW;
   canvas.height = wH;
 
@@ -76,6 +73,14 @@ function canvasInit(canvas) {
 
     ctx.lineWidth = 1;
     ctx.lineJoin = ctx.lineCap = 'round';
+
+    if (data) {
+      var image = new Image
+      image.src = data
+      image.onload = function() {
+        ctx.drawImage(image, 0, 0)
+      }
+    }
 
     // Trigger mouse
     canvas.moveOnCanvas = function(e) {
@@ -103,6 +108,8 @@ function canvasInit(canvas) {
         }
 
         if (canvas.mousePress) {
+          socket.emit('drawing', canvas.toDataURL());
+
           createCanvas();
         }
       }
