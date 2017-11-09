@@ -1,6 +1,6 @@
 {
   "name": "crazydrawingtool",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Crazy Drawing Tool",
   "main": "index.js",
   "dependencies": {
