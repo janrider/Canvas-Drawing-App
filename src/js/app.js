@@ -222,11 +222,11 @@ function startSocket(hash) {
   socket.on('drawing', onDrawingEvent);
 
   const history = JSON.parse(httpGet('/history?room=' + room)).data;
-
+  
   if (history && history.length > 0) {
-    history.forEach(item => {
-      createCanvasByData(item, true);
-    })
+    // history.forEach(item => {
+      createCanvasByData(history, true);
+    // })
   }
 }
 

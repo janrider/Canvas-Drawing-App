@@ -9,7 +9,7 @@ const watch = require('gulp-watch');
 const uglify = require('gulp-uglify');
 const htmlreplace = require('gulp-html-replace');
 const babel = require('gulp-babel');
-
+const zip = require('gulp-zip');
 
 // Watch
 
@@ -58,6 +58,12 @@ gulp.task('html', function() {
       }
     }))
     .pipe(gulp.dest('public'));
+});
+
+gulp.task('zip', function() {
+  gulp.src(['public/*', 'index.js', 'pachage.json', '.env'])
+    .pipe(zip('archive.zip'))
+    .pipe(gulp.dest('dist'))
 });
 
 gulp.task('build', ['css', 'js', 'html']);

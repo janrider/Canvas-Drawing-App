@@ -23,19 +23,6 @@ function repeatOften(func) {
   requestAnimationFrame(repeatOften);
 }
 
-const raf = (function() {
-  return (
-    window.requestAnimationFrame ||
-    window.webkitRequestAnimationFrame ||
-    window.mozRequestAnimationFrame ||
-    window.oRequestAnimationFrame ||
-    window.msRequestAnimationFrame ||
-    function(callback) {
-      window.setTimeout(callback, 1000 / 60);
-    }
-  );
-})();
-
 const drawCanvas = function(canvas, mX, mY, data) {
   const ctx = canvas.getContext("2d");
   const point = data ? data.point : {
@@ -95,9 +82,36 @@ const drawCanvas = function(canvas, mX, mY, data) {
   };
 };
 
+function mapData(canvas, data, isHistory) {
+  data.forEach((item, idx) => {
+    if (isHistory) {
+      drawCanvas(canvas, null, null, item)
+
+      if (idx === data.length -1) {
+        createImage(canvas.toDataURL(), true);
+      }
+    } else {
+      repeatOften(setTimeout(function(){
+        drawCanvas(canvas, null, null, item)
+
+        if (idx === data.length -1) {
+          createImage(canvas.toDataURL(), true);
+        }
+      }, 1000/60 * idx));
+    }
+  })
+}
+
 function canvasInit(canvas, data, isHistory) {
   canvas.width = wW;
   canvas.height = wH;
+  var dataList = [];
+
+  if (isHistory) {
+    data.forEach(item => {
+      dataList = dataList.concat(item)
+    });
+  }
 
   if (canvas.getContext) {
     var ctx = canvas.getContext("2d");
@@ -106,23 +120,7 @@ function canvasInit(canvas, data, isHistory) {
     ctx.lineJoin = ctx.lineCap = 'round';
 
     if (data) {
-      data.forEach((item, idx) => {
-        if (isHistory) {
-          drawCanvas(canvas, null, null, item)
-
-          if (idx === data.length -1) {
-            createImage(canvas.toDataURL(), true);
-          }
-        } else {
-          repeatOften(setTimeout(function(){
-            drawCanvas(canvas, null, null, item)
-
-            if (idx === data.length -1) {
-                createImage(canvas.toDataURL(), true);
-            }
-          }, 1000/60));
-        }
-      })
+      mapData(canvas, isHistory ? dataList : data, isHistory);
     } else {
       canvas.classList.add('active');
 
