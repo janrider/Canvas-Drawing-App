@@ -1,8 +1,12 @@
 {
   "name": "crazydrawingtool",
   "version": "0.0.4",
-  "description": "",
+  "description": "Crazy Drawing",
   "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/janrider/Canvas-Drawing-App"
+  },
   "scripts": {
     "start": "node index"
   },
@@ -11,7 +15,10 @@
     "express": "^4.15.2"
   },
   "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
     "gulp": "^3.9.1",
+    "gulp-babel": "^7.0.0",
     "gulp-clean-css": "^3.0.4",
     "gulp-concat": "^2.6.1",
     "gulp-concat-css": "^2.3.0",
@@ -21,6 +28,7 @@
     "gulp-sourcemaps": "^2.6.0",
     "gulp-uglify": "^2.1.2",
     "gulp-watch": "^4.3.11",
+    "pump": "^1.0.2",
     "socket.io": "^2.0.4"
   }
 }

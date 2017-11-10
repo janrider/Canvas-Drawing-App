@@ -3,11 +3,12 @@ const app = express();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
 const port = process.env.PORT || 3001;
+const APP_SRC = app.settings.env === 'development' ? '/src' : '/public';
 
 const history = new Object();
 const roomsList = [];
 
-app.use(express.static(__dirname + '/src'));
+app.use(express.static(__dirname + APP_SRC));
 
 function onConnection(socket){
   var roomName = '';
