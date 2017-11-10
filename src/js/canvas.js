@@ -88,14 +88,14 @@ function mapData(canvas, data, isHistory) {
       drawCanvas(canvas, null, null, item)
 
       if (idx === data.length -1) {
-        createImage(canvas.toDataURL(), true);
+        createImage(canvas.toDataURL());
       }
     } else {
       repeatOften(setTimeout(function(){
         drawCanvas(canvas, null, null, item)
 
         if (idx === data.length -1) {
-          createImage(canvas.toDataURL(), true);
+          createImage(canvas.toDataURL());
         }
       }, 1000/60 * idx));
     }
@@ -170,7 +170,7 @@ function canvasInit(canvas, data, isHistory) {
             canvas.removeEventListener('mouseup', this, false);
             canvas.removeEventListener('touchend', this, false);
 
-            createImage(canvas.toDataURL(), true, true);
+            createImage(canvas.toDataURL(), true);
           }
         }
 

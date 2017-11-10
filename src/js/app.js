@@ -105,12 +105,15 @@ var addCanvas = function() {
   num++;
 };
 
-var createCanvasByData = function(data, isHistory) {
+var createCanvasByData = function(data, isHistory, isImport) {
   var wrapper = document.querySelector("#wrapper");
   var node = document.createElement("canvas");
   
   canvasId = "canvas" + num;
   node.setAttribute("id", canvasId);
+  if (isImport || isHistory) {
+    node.classList.add('temp');
+  }
   wrapper.appendChild(node);
   
   var canvas = document.getElementById(canvasId);
@@ -125,21 +128,21 @@ var createCanvasByData = function(data, isHistory) {
   num++;
 };
 
-var createImage = function(data, replace, createNew) {
+var createImage = function(data, createNew) {
   var wrapper = document.querySelector("#wrapper");
   var node = document.createElement("img");
   node.src = data;
 
-  if (replace) {
-    const nodes = wrapper.querySelectorAll('canvas:not(.active)');
-    const activeNode = wrapper.querySelector('canvas.active');
-    var lastNode = nodes[nodes.length- 1];
-    if (lastNode) {
-      lastNode.remove();
-    } else {
-      activeNode.remove();
-    }
+  const tempNodes = wrapper.querySelectorAll('canvas:not(.active)');
+  const nodesList = wrapper.querySelectorAll('canvas:not(.temp)');
+
+
+  if (createNew) {
+    nodesList.forEach(e => e.parentNode.removeChild(e));
+  } else {
+    tempNodes.forEach(e => e.parentNode.removeChild(e));
   }
+
   wrapper.appendChild(node);
 
   if (createNew) {
@@ -147,28 +150,34 @@ var createImage = function(data, replace, createNew) {
   }
 };
 
-var deleteCanvas = function(n) {
-  var node = document.getElementById(layers[layers.length - 2 + (n ? n : 0)]);
-  node.remove();
+var deleteLayer = function(isCanvas) {
+  if (isCanvas) {
+    var canvas = document.querySelector('canvas.active');
+    canvas.remove();
 
-  layers.splice(layers.length - 2 + (n ? n : 0), 1);
-
-  if (layers.length < 2 && document.getElementById("undoBtn")) {
-    document.getElementById("undoBtn").disabled = true;
+    return;
   }
 
-  if(layers.length === 0) {
-    addCanvas();
-  }
+  var images = document.getElementById('wrapper').querySelectorAll('img');
+  images[0].parentNode.removeChild(images[images.length - 1]);
+  // lastImage.remove();
+
+  // node.remove();
+  //
+  // layers.splice(layers.length - 2 + (n ? n : 0), 1);
+  //
+  // if (layers.length < 2 && document.getElementById("undoBtn")) {
+  //   document.getElementById("undoBtn").disabled = true;
+  // }
+  //
+  // if(layers.length === 0) {
+  //   addCanvas();
+  // }
 };
 
 function clearAll() {
-  var node = document.getElementById('wrapper');
-  while (node.lastChild) {
-    deleteCanvas()
-  }
-
-  addCanvas();
+  var wrapper = document.getElementById('wrapper');
+  wrapper.querySelectorAll('img').forEach(e => e.parentNode.removeChild(e))
 }
 
 window.addEventListener('keydown', function(e) {
@@ -177,7 +186,7 @@ window.addEventListener('keydown', function(e) {
   if (evtobj.keyCode == 90 && evtobj.ctrlKey) {
 
     if (layers.length > 1) {
-      deleteCanvas();
+      deleteLayer();
     }
   }
 });
@@ -196,12 +205,12 @@ window.addEventListener("resize", debounce(function() {
   wW = window.innerWidth;
   wH = window.innerHeight;
 
-  deleteCanvas(1);
+  deleteLayer(true);
   addCanvas();
 }));
 
 var onDrawingEvent = function(data) {
-  createCanvasByData(data, false);
+  createCanvasByData(data, false, true);
 };
 
 function httpGet(theUrl) {
@@ -222,11 +231,9 @@ function startSocket(hash) {
   socket.on('drawing', onDrawingEvent);
 
   const history = JSON.parse(httpGet('/history?room=' + room)).data;
-  
+
   if (history && history.length > 0) {
-    // history.forEach(item => {
-      createCanvasByData(history, true);
-    // })
+    createCanvasByData(history, true);
   }
 }
 

@@ -1,6 +1,6 @@
 {
   "name": "crazydrawingtool",
-  "version": "0.0.5",
+  "version": "0.0.5-1",
   "description": "Crazy Drawing",
   "main": "index.js",
   "repository": {
@@ -8,8 +8,8 @@
     "url": "https://github.com/janrider/Canvas-Drawing-App"
   },
   "scripts": {
-    "dev": "export NODE_ENV=development&& node index",
-    "start": "export NODE_ENV=production&& node index"
+    "dev": "export NODE_ENV=development && node index",
+    "start": "export NODE_ENV=production && node index"
   },
   "author": "Vladyslav Levkutnyk",
   "dependencies": {

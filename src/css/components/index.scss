@@ -31,5 +31,6 @@ canvas {
 
   &.active {
     pointer-events: auto;
+    cursor: pointer;
   }
 }
