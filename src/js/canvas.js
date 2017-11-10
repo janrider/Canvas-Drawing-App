@@ -18,28 +18,47 @@ const lineSize = function() {
   return Math.floor((Math.random() * options.length / options.sizeKoof));
 };
 
+function repeatOften(func) {
+  func
+  requestAnimationFrame(repeatOften);
+}
 
-const drawCanvas = function(canvas, mX, mY) {
+const raf = (function() {
+  return (
+    window.requestAnimationFrame ||
+    window.webkitRequestAnimationFrame ||
+    window.mozRequestAnimationFrame ||
+    window.oRequestAnimationFrame ||
+    window.msRequestAnimationFrame ||
+    function(callback) {
+      window.setTimeout(callback, 1000 / 60);
+    }
+  );
+})();
+
+const drawCanvas = function(canvas, mX, mY, data) {
   const ctx = canvas.getContext("2d");
-  const point = {
+  const point = data ? data.point : {
     x: (mX && mY) ? mX + float() : Math.floor(Math.random() * (wW) * 100) / 100,
     y: (mX && mY) ? mY + float() : Math.floor(Math.random() * (wH) * 100) / 100,
   };
-  const signX = sign();
-  const signY = sign();
-  const line = {
+  const signX = data ? data.signY : sign();
+  const signY = data ? data.signY : sign();
+  const line = data ? data.line : {
     sX: point.x + lineSize() * signX,
     sY: point.y + lineSize() * signY,
     eX: point.x + lineSize() * -signX,
     eY: point.y + lineSize() * -signY,
   };
+  const type = data ? data.type : options.type;
+  const radius = data ? data.radius : lineSize(10);
 
   ctx.beginPath();
   ctx.moveTo(options.endLine ? options.endLine.x : line.sX, options.endLine ? options.endLine.y : line.sY);
 
-  if (options.type === '1') {
+  if (type === '1') {
     ctx.lineTo(line.eX, line.eY);
-  } else if (options.type === '2') {
+  } else if (type === '2') {
     line.cX1 = (line.sX + line.eX)/2 + Math.random() * 10 * signX;
     line.cY1 = (line.sY + line.eY)/2 + Math.random() * 10 * -signY;
 
@@ -50,21 +69,33 @@ const drawCanvas = function(canvas, mX, mY) {
       y: line.eY,
     }
   } else {
-    ctx.arc(line.sX,line.sY,lineSize(10),0,2*Math.PI);
+    ctx.arc(line.sX,line.sY,radius,0,2*Math.PI);
   }
 
-  const getColor = 'rgba(' + color('1') + ', ' + color('2') + ', ' + color('3') + ', ' + (opacity(options.opacity)) + ')';
+  const getColor = data ? data.color : 'rgba(' + color('1') + ', ' + color('2') + ', ' + color('3') + ', ' + (opacity(options.opacity)) + ')';
 
-  if (options.type === '3') {
+  if (type === '3') {
     ctx.fillStyle = getColor;
     ctx.fill()
   } else {
     ctx.strokeStyle = getColor;
     ctx.stroke();
   }
+
+  if (data) return null;
+
+  return {
+    type: options.type,
+    point,
+    line,
+    signX,
+    signY,
+    radius,
+    color: getColor
+  };
 };
 
-function canvasInit(canvas, data) {
+function canvasInit(canvas, data, isHistory) {
   canvas.width = wW;
   canvas.height = wH;
 
@@ -75,36 +106,54 @@ function canvasInit(canvas, data) {
     ctx.lineJoin = ctx.lineCap = 'round';
 
     if (data) {
-      var image = new Image
-      image.src = data
-      image.onload = function() {
-        ctx.drawImage(image, 0, 0)
-      }
-    }
+      data.forEach((item, idx) => {
+        if (isHistory) {
+          drawCanvas(canvas, null, null, item)
 
-    if (!data) {
+          if (idx === data.length -1) {
+            createImage(canvas.toDataURL(), true);
+          }
+        } else {
+          repeatOften(setTimeout(function(){
+            drawCanvas(canvas, null, null, item)
+
+            if (idx === data.length -1) {
+                createImage(canvas.toDataURL(), true);
+            }
+          }, 1000/60));
+        }
+      })
+    } else {
       canvas.classList.add('active');
+
+      const drawing = [];
 
       canvas.moveOnCanvas = function(e) {
         if (options.isDraw && (options.source === '2' || (options.source === '1' && canvas.mousePress))) {
           if (intervalDraw) {
             clearInterval(intervalDraw);
           }
-          drawCanvas(canvas, e.touches ? e.touches[0].pageX : e.pageX, e.touches ? e.touches[0].pageY : e.pageY)
+          const res = drawCanvas(canvas, e.touches ? e.touches[0].pageX : e.pageX, e.touches ? e.touches[0].pageY : e.pageY)
+          if (res) {
+            drawing.push(res);
+          }
         }
       };
 
       canvas.mouseDown = function(e) {
-        canvas.mousePress = true;
-        if (options.isDraw && options.source === '1') {
-          intervalDraw = setInterval(function() {
-            drawCanvas(canvas, e.touches ? e.touches[0].pageX : e.pageX, e.touches ? e.touches[0].pageY : e.pageY)
-          }, Math.floor(Math.random() * (SPEED - (SPEED / 2) + (SPEED / 2)) * 100) / 5)
+        if (e.which === 1) {
+          canvas.mousePress = true;
+          if (options.isDraw && options.source === '1') {
+            intervalDraw = setInterval(function() {
+              const res = drawCanvas(canvas, e.touches ? e.touches[0].pageX : e.pageX, e.touches ? e.touches[0].pageY : e.pageY)
+              if (res) {
+                drawing.push(res);
+              }
+            }, Math.floor(Math.random() * (SPEED - (SPEED / 2) + (SPEED / 2)) * 100) / 5)
+          }
         }
       };
       canvas.mouseUp = function() {
-        canvas.classList.remove('active');
-
         if (options.source === '2' || (options.source === '1')) {
           options.endLine = null;
           if (intervalDraw) {
@@ -113,7 +162,7 @@ function canvasInit(canvas, data) {
 
           if (canvas.mousePress) {
             if (hash) {
-              socket.emit('drawing', canvas.toDataURL());
+              socket.emit('drawing', drawing);
             }
 
             canvas.removeEventListener('mousedown', this, false);
@@ -123,7 +172,7 @@ function canvasInit(canvas, data) {
             canvas.removeEventListener('mouseup', this, false);
             canvas.removeEventListener('touchend', this, false);
 
-            createCanvas();
+            createImage(canvas.toDataURL(), true, true);
           }
         }
 
