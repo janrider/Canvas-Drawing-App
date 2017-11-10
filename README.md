@@ -8,7 +8,7 @@ Application for single or milti-user drawing on canvas.
 1. Run the setup script `$ npm i`. Will install all dependencies
 
 ## Development
-1. Run express dev server `$ npm run start`
+1. Run express dev server `$ npm run dev`
 1. Run Gulp watcher to watch SCSS files `$ gulp watch`
 
 ## Build

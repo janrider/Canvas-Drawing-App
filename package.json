@@ -8,7 +8,8 @@
     "url": "https://github.com/janrider/Canvas-Drawing-App"
   },
   "scripts": {
-    "start": "node index"
+    "dev": "set NODE_ENV=development && node index",
+    "start": "set NODE_ENV=production && node index"
   },
   "author": "Vladyslav Levkutnyk",
   "dependencies": {
